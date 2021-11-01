@@ -1,0 +1,9 @@
+server:
+  port: 9080
+bootrest:
+  customproperty: hello
+spring:
+  security:
+    user:
+      name: guest
+      password: guest123
