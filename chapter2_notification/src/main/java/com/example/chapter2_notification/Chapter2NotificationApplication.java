@@ -39,6 +39,7 @@ class Receiver {
 
 @Component
 class Mailer {
+    @Autowired
     private JavaMailSender javaMailSender;
 
     Mailer() {}
