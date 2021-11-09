@@ -1,5 +1,9 @@
 package com.example.chapter2_swagger;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,20 +38,10 @@ class GreeterController {
     }
 }
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 class Greet {
     private String message;
-
-    public Greet() {}
-
-    public Greet(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }
