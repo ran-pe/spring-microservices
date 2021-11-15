@@ -1,7 +1,9 @@
 package com.example.springsecuritybasic.config;
 
 import com.example.springsecuritybasic.account.AccountService;
+import com.example.springsecuritybasic.common.LoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
@@ -9,14 +11,16 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    
+
     @Autowired
     AccountService accountService;
 
@@ -50,16 +54,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(accountService);
     }
 
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-
+    /**
+     * 정적리소스 security 미적용
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
 
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Custom Filter 적용
+        http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
 
         http.authorizeRequests()
                 .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
@@ -69,7 +76,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .expressionHandler(expressionHandler());
 
         http.formLogin();
+
         http.httpBasic();
 
     }
+
+//    @Bean
+//    @Override
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
+
+
 }
