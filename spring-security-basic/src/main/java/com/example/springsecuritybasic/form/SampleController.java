@@ -1,7 +1,10 @@
 package com.example.springsecuritybasic.form;
 
+import com.example.springsecuritybasic.account.AccountContext;
+import com.example.springsecuritybasic.account.AccountRepository;
 import com.example.springsecuritybasic.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +14,14 @@ import java.security.Principal;
 import java.util.concurrent.Callable;
 
 @Controller
+@EnableAsync
 public class SampleController {
 
     @Autowired
     SampleService sampleService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
@@ -39,6 +46,7 @@ public class SampleController {
     public String dashboard(Model model, Principal principal) {
         model.addAttribute("pageName", "dashboard");
         model.addAttribute("message", "Hello " + principal.getName());
+        AccountContext.setAccount(accountRepository.findByUsername(principal.getName()));
         sampleService.dashboard();
 
         return "dashboard";
