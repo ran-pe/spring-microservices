@@ -15,7 +15,7 @@ public class Application {
         try(Connection connection = DriverManager.getConnection(url, username, password)) {
             System.out.println("Connection created: " + connection);
 //            String sql = "create table account (id int, username varchar(256), password varchar(256));";
-            String sql = "insert into account values (1, 'youngran', 'youngransecret');";
+            String sql = "insert into account values (2, 'youngran2', 'youngransecret2');";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.execute();
             }
