@@ -7,6 +7,7 @@
         <module>maven-jdbc-sample</module>
         <module>spring-boot-admin-server</module>
         <module>spring-boot-data-jpa</module>
+        <module>querydls-sample</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
