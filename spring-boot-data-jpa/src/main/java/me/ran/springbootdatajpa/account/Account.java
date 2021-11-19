@@ -1,6 +1,5 @@
-package me.ran.springbootdatajpa;
+package me.ran.springbootdatajpa.account;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,13 +7,17 @@ import javax.persistence.Id;
 @Entity
 public class Account {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
-    @Column
     private String username;
 
     private String password;
+
+    private String firstname;
+
+    private String lastname;
 
     public Long getId() {
         return id;
@@ -39,4 +42,22 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+
 }
