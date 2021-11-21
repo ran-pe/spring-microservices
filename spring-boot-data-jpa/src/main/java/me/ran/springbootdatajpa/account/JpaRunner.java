@@ -35,9 +35,14 @@ public class JpaRunner implements ApplicationRunner {
 
 //        entityManager.persist(account);
 
-//        Hibernate Session으로 저장가능
+//        Hibernate Session으로도 저장가능
         Session session = entityManager.unwrap(Session.class);
         session.save(account);
         session.save(study);
+
+        Account account_re = session.load(Account.class, account.getId());
+        account_re.setUsername("ran");
+        System.out.println("======================");
+        System.out.println(account_re.getUsername());
     }
 }
