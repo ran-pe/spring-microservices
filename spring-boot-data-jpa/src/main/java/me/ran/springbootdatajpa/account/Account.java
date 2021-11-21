@@ -2,6 +2,8 @@ package me.ran.springbootdatajpa.account;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -32,6 +34,11 @@ public class Account {
 
     @Embedded
     private Address CompanyAddress;
+
+    // 단방향, Account가 주인일때 --> account_studies 테이블이 생성됨
+    // 양방향, Study가 주인일때 mappedBy를 설정 --> account_studies 테이블이 생성안됨
+    @OneToMany(mappedBy = "account")
+    private Set<Study> studies = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -71,5 +78,23 @@ public class Account {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
+    }
+
+    public Set<Study> getStudies() {
+        return studies;
+    }
+
+    public void setStudies(Set<Study> studies) {
+        this.studies = studies;
+    }
+
+    public void addStudy(Study study) {
+        this.getStudies().add(study); // optional
+        study.setAccount(this);  // 필수
+    }
+
+    public void removeStudy(Study study) {
+        this.getStudies().remove(study); // optional
+        study.setAccount(null);  // 필수
     }
 }

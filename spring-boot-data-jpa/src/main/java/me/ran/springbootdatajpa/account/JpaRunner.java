@@ -22,10 +22,22 @@ public class JpaRunner implements ApplicationRunner {
         account.setUsername("ranran");
         account.setPassword("hibernate");
 
+        Study study = new Study();
+        study.setName("Spring Data JPA");
+        // study가 주인일때는 study에 account의 정보를 넣어서 저장
+//        study.setAccount(account);
+
+        // account가 주인일때는 account에 study의 정보를 넣어서 저장 --> account로 이동
+//        account.getStudies().add(study); // optional
+//        study.setAccount(account);  // 필수
+
+        account.addStudy(study);
+
 //        entityManager.persist(account);
 
 //        Hibernate Session으로 저장가능
         Session session = entityManager.unwrap(Session.class);
         session.save(account);
+        session.save(study);
     }
 }
