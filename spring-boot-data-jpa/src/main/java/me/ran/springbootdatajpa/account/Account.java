@@ -1,8 +1,7 @@
 package me.ran.springbootdatajpa.account;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Account {
@@ -11,13 +10,28 @@ public class Account {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String username;
 
     private String password;
 
-    private String firstname;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created = new Date();
 
-    private String lastname;
+    @Transient // Column 으로 만들고 싶지 않을때 사용
+    private String fullname;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "street", column = @Column(name = "home_street")),
+            @AttributeOverride(name = "city", column = @Column(name = "home_city")),
+            @AttributeOverride(name = "state", column = @Column(name = "home_state")),
+            @AttributeOverride(name = "zipCode", column = @Column(name = "home_zipCode"))
+    })
+    private Address homeAddress;
+
+    @Embedded
+    private Address CompanyAddress;
 
     public Long getId() {
         return id;
@@ -43,21 +57,19 @@ public class Account {
         this.password = password;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public Date getCreated() {
+        return created;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getFullname() {
+        return fullname;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
-
-
 }
