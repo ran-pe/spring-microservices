@@ -1,6 +1,7 @@
 package com.example.springsecuritybasic.account;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AccountService implements UserDetailsService {
@@ -18,7 +20,7 @@ public class AccountService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("===========loadUserByUsername==========");
+        log.info("===========loadUserByUsername==========");
         Account account = accountRepository.findByUsername(username);
         if(account == null) {
             throw new UsernameNotFoundException(username);

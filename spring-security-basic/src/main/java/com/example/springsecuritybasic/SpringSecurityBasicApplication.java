@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-@EnableAsync
 public class SpringSecurityBasicApplication {
 
     @Bean

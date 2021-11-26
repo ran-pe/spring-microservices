@@ -2,12 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SignUp</title>
+    <title>Sign Up</title>
 </head>
 <body>
     <form action="/signup" th:action="@{/signup}" th:object="${account}" method="post">
         <p>Username: <input type="text" th:field="*{username}" /></p>
         <p>Password: <input type="password" th:field="*{password}" /></p>
+        <p>
+            Role: <select th:field="*{role}" ><option value="USER">USER</option><option value="ADMIN">ADMIN</option></select>
+        </p>
         <p><input type="submit" value="SignUp" /></p>
     </form>
 </body>

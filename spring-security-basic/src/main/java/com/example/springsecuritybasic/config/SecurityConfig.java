@@ -2,6 +2,7 @@ package com.example.springsecuritybasic.config;
 
 import com.example.springsecuritybasic.account.AccountService;
 import com.example.springsecuritybasic.common.LoggingFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +15,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -49,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     */
 
     /**
-     * 생략가능
+     * UserDetailsService의 구현체가 accountService 임을 알려준다(생략 가능)
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -71,17 +73,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Custom Filter 적용
-        // http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
+        http.addFilterBefore(new LoggingFilter(), WebAsyncManagerIntegrationFilter.class);
 
         http.authorizeRequests()
                 .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()
-                .mvcMatchers("/admin").hasRole("ADMIN")
+                .mvcMatchers("/admin").hasAuthority("ROLE_ADMIN")
                 .mvcMatchers("/user").hasRole("USER")
                 .anyRequest().authenticated()
                 .expressionHandler(expressionHandler());
 
-        http.formLogin();
+        http.formLogin()
+                .loginPage("/login")
+                .permitAll();
+
+        http.logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true);
+
+        http.rememberMe()
+                .userDetailsService(accountService);
+
         http.httpBasic();
+
+        http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+            UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String username = principal.getUsername();
+            String servletPath = request.getServletPath();
+            log.error(username + " is denied to access to " + servletPath);
+            response.sendRedirect("/access-denied");
+        });
 
         // SecurityContext를 자식 쓰레드에도 공유하는 전략 설정
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
