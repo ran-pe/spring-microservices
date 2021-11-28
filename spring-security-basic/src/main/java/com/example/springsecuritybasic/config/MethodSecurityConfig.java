@@ -19,6 +19,6 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
         AffirmativeBased accessDecisionManager = (AffirmativeBased) super.accessDecisionManager();
         accessDecisionManager.getDecisionVoters().add(new RoleHierarchyVoter(roleHierarchy));
 
-        return accessDecisionManager();
+        return accessDecisionManager;
     }
 }
