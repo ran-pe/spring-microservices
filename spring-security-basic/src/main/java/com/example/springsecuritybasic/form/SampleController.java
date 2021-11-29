@@ -1,10 +1,14 @@
 package com.example.springsecuritybasic.form;
 
+import com.example.springsecuritybasic.account.Account;
 import com.example.springsecuritybasic.account.AccountContext;
 import com.example.springsecuritybasic.account.AccountRepository;
+import com.example.springsecuritybasic.account.UserAccount;
+import com.example.springsecuritybasic.common.CurrentUser;
 import com.example.springsecuritybasic.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,12 +28,12 @@ public class SampleController {
     AccountRepository accountRepository;
 
     @GetMapping("/")
-    public String index(Model model, Principal principal) {
+    public String index(Model model, @AuthenticationPrincipal UserAccount userAccount) {
         model.addAttribute("pageName", "index");
-        if (principal == null) {
+        if (userAccount == null) {
             model.addAttribute("message", "Hello Spring Security");
         } else {
-            model.addAttribute("message", "Hello " + principal.getName() + ", Spring Security");
+            model.addAttribute("message", "Hello " + userAccount.getUsername() + ", Spring Security");
         }
         return "index";
     }
@@ -43,19 +47,19 @@ public class SampleController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, Principal principal) {
+    public String dashboard(Model model, @AuthenticationPrincipal(expression = "#this == 'anonymousUser' ? null : account") Account account) {
         model.addAttribute("pageName", "dashboard");
-        model.addAttribute("message", "Hello " + principal.getName());
-        AccountContext.setAccount(accountRepository.findByUsername(principal.getName()));
+        model.addAttribute("message", "Hello " + account.getUsername());
+        AccountContext.setAccount(accountRepository.findByUsername(account.getUsername()));
         sampleService.dashboard();
 
         return "dashboard";
     }
 
     @GetMapping("/admin")
-    public String admin(Model model, Principal principal) {
+    public String admin(Model model, @CurrentUser Account account) {
         model.addAttribute("pageName", "admin");
-        model.addAttribute("message", "Hello Admin, " + principal.getName());
+        model.addAttribute("message", "Hello Admin, " + account.getUsername());
 
         return "admin";
     }

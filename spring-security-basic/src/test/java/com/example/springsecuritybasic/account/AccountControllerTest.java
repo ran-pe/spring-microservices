@@ -56,11 +56,10 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithUser
     public void admin_user() throws Exception {
         mockMvc.perform(get("/admin"))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
