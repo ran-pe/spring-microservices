@@ -4,8 +4,10 @@ import com.example.springsecuritybasic.account.Account;
 import com.example.springsecuritybasic.account.AccountContext;
 import com.example.springsecuritybasic.account.AccountRepository;
 import com.example.springsecuritybasic.account.UserAccount;
+import com.example.springsecuritybasic.book.BookRepository;
 import com.example.springsecuritybasic.common.CurrentUser;
 import com.example.springsecuritybasic.common.SecurityLogger;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,15 +19,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.security.Principal;
 import java.util.concurrent.Callable;
 
+@AllArgsConstructor
 @Controller
 @EnableAsync
 public class SampleController {
 
-    @Autowired
     SampleService sampleService;
 
-    @Autowired
     AccountRepository accountRepository;
+
+    BookRepository bookRepository;
 
     @GetMapping("/")
     public String index(Model model, @AuthenticationPrincipal UserAccount userAccount) {
@@ -62,6 +65,15 @@ public class SampleController {
         model.addAttribute("message", "Hello Admin, " + account.getUsername());
 
         return "admin";
+    }
+
+    @GetMapping("/user")
+    public String user(Model model, @CurrentUser Account account) {
+        model.addAttribute("pageName", "user");
+        model.addAttribute("message", "Hello User, " + account.getUsername());
+        model.addAttribute("books", bookRepository.findCurrentUserBooks());
+
+        return "user";
     }
 
     @GetMapping("/async-handler")

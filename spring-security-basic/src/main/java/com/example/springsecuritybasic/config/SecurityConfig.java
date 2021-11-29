@@ -92,17 +92,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true);
 
         http.rememberMe()
-                .userDetailsService(accountService);
+                .userDetailsService(accountService)
+                .key("remember-me-sample");
 
         http.httpBasic();
 
-        http.exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
-            UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String username = principal.getUsername();
-            String servletPath = request.getServletPath();
-            log.error(username + " is denied to access to " + servletPath);
-            response.sendRedirect("/access-denied");
-        });
+        http.exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    String username = principal.getUsername();
+                    log.error(username + " is denied to access to " + request.getServletPath());
+                    response.sendRedirect("/access-denied");
+                });
 
         // SecurityContext를 자식 쓰레드에도 공유하는 전략 설정
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
@@ -114,6 +115,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
 
 }
