@@ -7,7 +7,8 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Study {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     private String name;

@@ -1,10 +1,8 @@
 package me.ran.springbootdatajpa.account;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.hibernate.Session;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
