@@ -7,9 +7,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +51,7 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    public void crud3() {
+    public void crud_paging() {
         this.createComment(100, "Spring Data JPA");
         this.createComment(50, "Spring Security");
 
@@ -58,7 +63,7 @@ public class CommentRepositoryTest {
     }
 
     @Test
-    public void crud4() {
+    public void crud_stream() {
         this.createComment(100, "Spring Data JPA");
         this.createComment(500, "Spring Security");
 
@@ -68,6 +73,54 @@ public class CommentRepositoryTest {
             assertThat(firstComment.getLikeCount()).isEqualTo(100);
         }
     }
+
+    // 비동기쿼리는 권장하지 않음
+//    1. 테스트 코드 작성이 어려움.
+//    2. 코드 복잡도 증가.
+//    3. 성능상 이득이 없음.
+//     --> DB 부하는 결국 같고 메인 쓰레드 대신 백드라운드 쓰레드가 일하는 정도의 차이.
+//     --> 단, 백그라운드로 실행하고 결과를 받을 필요가 없는 작업이라면 @Async를 사용해서 응답 속도를 향상 시킬 수는 있다.
+    @Test
+    public void crud_future() throws ExecutionException, InterruptedException {
+        this.createComment(100, "Spring Data JPA");
+        this.createComment(500, "Spring Security");
+
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "likeCount"));
+
+        Future<List<Comment>> future = commentRepository.findByCommentContains("Spring", pageRequest);
+
+        System.out.println("is Done?" + future.isDone());
+        List<Comment> comments = future.get();
+        comments.forEach(System.out::println);
+
+    }
+
+    @Test
+    public void crud_listenableFuture() {
+        this.createComment(100, "Spring Data JPA");
+        this.createComment(500, "Spring Security");
+
+
+        ListenableFuture<List<Comment>> future = commentRepository.findByCommentContains("Spring");
+
+        System.out.println("is Done?" + future.isDone());
+
+        future.addCallback(new ListenableFutureCallback<List<Comment>>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                System.out.println(ex);
+            }
+
+            @Override
+            public void onSuccess(@Nullable List<Comment> result) {
+                result.forEach(System.out::println);
+            }
+        });
+
+
+    }
+
+
 
     private void createComment(int likeCount, String comment) {
         Comment newComment = new Comment();
