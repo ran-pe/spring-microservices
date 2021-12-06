@@ -3,7 +3,7 @@ package me.ran.springbootdatajpa.post;
 import java.util.List;
 
 public interface NewPostCustomRepository<T> {
-    List<NewPost> findByPost();
+    List<T> findByPost();
 
     void delete(T entity);
 }
