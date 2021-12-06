@@ -23,13 +23,13 @@ public class SimpleMyRepository<T, ID extends Serializable> extends SimpleJpaRep
 
     @Override
     public List<T> findByPost() {
-        System.out.println("== SimpleMyRepository findByPost");
+        System.out.println("SimpleMyRepository findByPost");
         return entityManager.createQuery("select p from NewPost as p").getResultList();
     }
 
     @Override
     public void delete(T entity) {
-        System.out.println("== SimpleMyRepository delete");
+        System.out.println("SimpleMyRepository delete");
         entityManager.detach(entity);
     }
 }
