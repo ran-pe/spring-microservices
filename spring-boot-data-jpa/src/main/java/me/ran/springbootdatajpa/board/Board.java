@@ -9,6 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
+@NamedQuery(name="Board.findByTitleForNamedQuery", query = "select b from Board as b where b.title = ?1")
 public class Board {
 
     @Id @GeneratedValue
