@@ -11,8 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.OPTIONAL;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -91,6 +93,27 @@ class BoardControllerTest {
         makeBoard("spring");
         List<Board> all = boardRepository.findByTitle("spring", JpaSort.unsafe("LENGTH(title)"));   // 사용불가능 Sort.by("LENGTH(title)")
         assertThat(all.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void updateTitle_no_recommend() {
+        Board board = makeBoard("spring");
+        String hibernate = "hibernate";
+        int update = boardRepository.updateTitle(board.getId(), hibernate);
+        assertThat(update).isEqualTo(1);
+
+        Optional<Board> byId = boardRepository.findById(board.getId());
+        assertThat(byId.get().getTitle()).isEqualTo(hibernate); // @Modifying(clearAutomatically = true) 셋팅해야 테스트성공
+    }
+
+    @Test
+    public void updateTitle_recommend() {
+        Board board = makeBoard("spring");
+        String hibernate = "hibernate";
+        board.setTitle(hibernate);
+
+        List<Board> boards = boardRepository.findAll();
+        assertThat(boards.get(0).getTitle()).isEqualTo(hibernate);
     }
 
     private Board makeBoard(String title) {
