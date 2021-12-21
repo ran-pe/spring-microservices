@@ -1,12 +1,12 @@
 package me.ran.springbootdatajpa.reply;
 
+import me.ran.springbootdatajpa.board.Board;
+import me.ran.springbootdatajpa.board.BoardRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -14,6 +14,9 @@ public class ReplyRepositoryTest {
 
     @Autowired
     ReplyRepository replyRepository;
+
+    @Autowired
+    BoardRepository boardRepository;
 
     @Test
     public void getComment() {
@@ -24,6 +27,66 @@ public class ReplyRepositoryTest {
 
         // NamedEntityGraph를 이용하여 EAGER로 변경
         replyRepository.getReplyById(1L);
+    }
+
+    @Test
+    public void getReply() {
+        replyRepository.findByBoard_Id(1L);
+    }
+
+    @Test
+    public void getVote() {
+        Board board = new Board();
+        board.setTitle("jpa");
+        Board savedBoard = boardRepository.save(board);
+
+        Reply reply = new Reply();
+        reply.setBoard(savedBoard);
+        reply.setUp(10);
+        reply.setDown(1);
+        replyRepository.save(reply);
+
+        replyRepository.findByBoard_Id(savedBoard.getId()).forEach(c -> {
+            System.out.println(c.getVotes());
+            System.out.println("================================");
+            System.out.println(c.getVotes2());
+        });
+
+    }
+
+    @Test
+    public void testForClass() {
+        Board board = new Board();
+        board.setTitle("jpa");
+        Board savedBoard = boardRepository.save(board);
+
+        Reply reply = new Reply();
+        reply.setBoard(savedBoard);
+        reply.setUp(10);
+        reply.setDown(1);
+        replyRepository.save(reply);
+
+        replyRepository.findByBoard_Title(savedBoard.getTitle()).forEach(c -> {
+            System.out.println(c.getVotes());
+            System.out.println("================================");
+        });
+
+    }
+
+    @Test
+    public void testForInterface() {
+        Board board = new Board();
+        board.setTitle("jpa");
+        Board savedBoard = boardRepository.save(board);
+
+        Reply reply = new Reply();
+        reply.setBoard(savedBoard);
+        reply.setUp(10);
+        reply.setDown(1);
+        replyRepository.save(reply);
+
+        replyRepository.findByBoard_IdAndBoard_Title(savedBoard.getId(), savedBoard.getTitle(), ReplyOnly.class);
+
     }
 
 }
