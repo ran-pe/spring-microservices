@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -87,6 +89,11 @@ public class ReplyRepositoryTest {
 
         replyRepository.findByBoard_IdAndBoard_Title(savedBoard.getId(), savedBoard.getTitle(), ReplyOnly.class);
 
+    }
+
+    @Test
+    public void specs() {
+        Page<Reply> page = replyRepository.findAll(ReplySpecs.isBest().and(ReplySpecs.isGood()), PageRequest.of(0, 10));
     }
 
 }
